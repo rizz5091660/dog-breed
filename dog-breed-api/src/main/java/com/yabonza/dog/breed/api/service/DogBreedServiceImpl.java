@@ -42,7 +42,7 @@ public class DogBreedServiceImpl implements DogBreedService {
 		DogBreed dogBreed = new DogBreed();
 		try {
 			DogCeo dogCeo = dogCeoClient.get();
-			populateDogBreed(dogBreed, dogCeo);
+			fetchDogGeneratorResponse(dogBreed, dogCeo);
 			File file = fileUtil.save(dogCeo.getMessage(),stringUtil.getImageName(dogCeo.getMessage()));
 			String objectUrl = amazonS3Client.upload(file, stringUtil.getImageName(dogCeo.getMessage()));
 			dogBreed.setS3BucketPath(objectUrl);
@@ -55,7 +55,7 @@ public class DogBreedServiceImpl implements DogBreedService {
 		return HttpWSResponseUtil.generateResponse(HttpStatus.OK, dogBreed);
 	}
 
-	private void populateDogBreed(DogBreed db, DogCeo dogCeo) {
+	private void fetchDogGeneratorResponse(DogBreed db, DogCeo dogCeo) {
 		db.setId(UUID.randomUUID().toString());
 		db.setName(stringUtil.getBreedName(dogCeo.getMessage()));
 		db.setUploadedDt(new Date());
@@ -95,8 +95,6 @@ public class DogBreedServiceImpl implements DogBreedService {
 		name=name!=null?name.toLowerCase():name;
 		return HttpWSResponseUtil.generateResponse(HttpStatus.OK, dogBreedRepository.findByName(name));
 	}
-	
-	
 	
 
 }

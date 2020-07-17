@@ -36,7 +36,6 @@ public class DogBreedController {
 		return dogBreedService.delete(id);
 	}
 
-	
 	@GetMapping(value="/get/all")
 	@ResponseBody
 	public ResponseEntity<Object> getAll(){
