@@ -16,6 +16,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.yabonza.dog.breed.api.config.DogBreedConfig;
+import com.yabonza.dog.breed.api.util.StringUtil;
 
 
 @Service
@@ -24,8 +25,10 @@ public class AmazonS3Client {
 	@Autowired
 	DogBreedConfig dogBreedConfig;
 	private static final Logger log = LoggerFactory.getLogger(AmazonS3Client.class);
-
-	public String uploadS3(File file, String image) throws Exception {	
+	@Autowired
+	StringUtil stringUtil;
+	
+	public String upload(File file, String image) throws Exception {	
 		try {
 			AWSCredentials credentials = new BasicAWSCredentials(dogBreedConfig.getAwsAccessKey(),dogBreedConfig.getAwsSecretKey());
 			AmazonS3 s3client = AmazonS3ClientBuilder
@@ -36,6 +39,21 @@ public class AmazonS3Client {
 			s3client.putObject(new PutObjectRequest(dogBreedConfig.getAwsBucketName(), dogBreedConfig.getAwsBucketFolder()+"/"+image, file)
 					.withCannedAcl(CannedAccessControlList.PublicRead));
 			return dogBreedConfig.getAwsCdnUrl()+dogBreedConfig.getAwsBucketFolder()+"/"+image;
+		}catch(Exception e) {
+			log.error(e.getMessage());
+			throw e;	
+		}
+	}
+	
+	public void delete(String s3ImageBucketPath) throws Exception {	
+		try {
+			AWSCredentials credentials = new BasicAWSCredentials(dogBreedConfig.getAwsAccessKey(),dogBreedConfig.getAwsSecretKey());
+			AmazonS3 s3client = AmazonS3ClientBuilder
+					.standard()
+					.withCredentials(new AWSStaticCredentialsProvider(credentials))
+					.withRegion(Regions.AP_SOUTHEAST_2)
+					.build();		
+			s3client.deleteObject(dogBreedConfig.getAwsBucketName(), dogBreedConfig.getAwsBucketFolder()+"/"+stringUtil.getImageName(s3ImageBucketPath));
 		}catch(Exception e) {
 			log.error(e.getMessage());
 			throw e;	

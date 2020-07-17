@@ -20,5 +20,7 @@ public class DogBreedConfig {
 	private String awsCdnUrl;
 	@Value("${file.temp.folder}")
 	private String fileTempFolder;
+	@Value("${dog.ceo.url}")
+	private String dogCeoUrl;
 	
 }
